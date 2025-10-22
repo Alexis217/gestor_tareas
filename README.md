@@ -81,7 +81,6 @@ Asegúrate de tener instalado:
 
 ```bash
 git clone https://github.com/Alexis217/gestor_tareas.git
-cd gestor-de-tareas
 ```
 
 ### 2\. Configurar Variables de Entorno
