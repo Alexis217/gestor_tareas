@@ -1,0 +1,18 @@
+# --- ETAPA 1: Servidor Web Nginx ---
+# Usamos la imagen oficial de Nginx (alpine es la más ligera)
+FROM nginx:1.25-alpine
+
+# El directorio por defecto de Nginx para servir contenido estático
+WORKDIR /usr/share/nginx/html
+
+# Borramos el index.html y 50x.html por defecto de Nginx
+RUN rm -f index.html 50x.html
+
+# Copiamos nuestros archivos estáticos (html, css, js)
+COPY . .
+
+# Nginx por defecto expone el puerto 80
+EXPOSE 80
+
+# El comando por defecto de la imagen Nginx ya es 'nginx -g "daemon off;"'
+# así que no necesitamos un CMD.

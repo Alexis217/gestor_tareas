@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  
+  # --- Servicio de la Base de Datos (PostgreSQL) ---
+  postgres-db:
+    image: postgres:14-alpine
+    container_name: postgres_db_tasks
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    # Nota: No exponemos el puerto 5432, es más seguro.
+    # (Si necesitas acceder desde tu PC, descomenta la línea 'ports')
+    # ports:
+    #   - "5432:5432"
+
+  # --- Servicio del Backend (Node.js) ---
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend_tasks
+    environment:
+      PORT: 3000
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_PORT: 5432
+      DB_HOST: postgres-db
+    depends_on:
+      - postgres-db
+    restart: unless-stopped
+    # ¡YA NO EXPONEMOS EL PUERTO 3000 AL HOST!
+    # ports:
+    #   - "3000:3000" 
+
+  # --- Servicio Nginx (Proxy Reverso y Frontend) ---
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: nginx_proxy
+    ports:
+      # Expone el puerto 80 del contenedor al puerto 80 de tu máquina
+      - "80:80"
+    volumes:
+      # 1. Monta nuestros archivos estáticos del frontend
+      - ./frontend:/var/www/html
+      # 2. Monta nuestra configuración personalizada de Nginx
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend # Nginx no debe iniciar hasta que el backend esté listo
+    restart: unless-stopped
+
+# --- Volúmenes ---
+volumes:
+  db-data:
+    driver: local
