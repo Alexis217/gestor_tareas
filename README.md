@@ -80,7 +80,7 @@ Asegúrate de tener instalado:
 ### 1\. Clonar el repositorio
 
 ```bash
-git clone [https://github.com/tu-usuario/tu-repositorio.git](https://github.com/tu-usuario/tu-repositorio.git)
+git clone https://github.com/Alexis217/gestor_tareas.git
 cd gestor-de-tareas
 ```
 
